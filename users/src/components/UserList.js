@@ -7,6 +7,17 @@ class UserList extends React.Component {
     state = {
         users: []
     }
+
+    deleteUser = (e, id) => {
+        e.preventDefault();
+
+        axios
+            .delete(`http://localhost:4000/api/users/${id}`)
+            .then( res => {
+                this.setState({ users: res.data.users });
+            })
+            .catch( err => console.log(err));
+    }
     
     componentDidMount(){
         axios
@@ -14,14 +25,14 @@ class UserList extends React.Component {
             .then( res => {
                 this.setState({ users: res.data.users });
             })
-            .catch(err => console.log(err))
+            .catch(err => console.log(err));
     }
 
     render(){
         return(
             <div className="user-list-wrapper">
-                {this.state.users.map( (user, index) => {
-                    return <User user={user} key={index} />;
+                {this.state.users.map( user => {
+                    return <User user={user} key={user.id} deleteUser={this.deleteUser}/>;
                 })}
             </div>
         );
