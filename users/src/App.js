@@ -9,7 +9,9 @@ class App extends Component {
   state = {
     users: [],
     name: '',
-    bio: ''
+    bio: '',
+    userId: '',
+    isUpdating: false
   };
 
   handleInput = e => {
@@ -27,7 +29,7 @@ class App extends Component {
       .then( res => {
         const tempArray = [...this.state.users];
         let newArray = tempArray.concat(res.data.user);
-        
+
         this.setState({ users: newArray });
       })
       .catch( err => console.log(err));
@@ -44,6 +46,22 @@ class App extends Component {
         .catch( err => console.log(err));
   }
 
+  populateForm = (e, id) => {
+    e.preventDefault();
+    
+    this.setState({ isUpdating: true, userId: id });
+  }
+
+  updateUser =  user => {
+
+    axios
+        .put(`http://localhost:4000/api/users/${user.id}`, user)
+        .then(res => {
+          this.setState({ users: res.data.users, isUpdating: false })
+        })
+        .catch(err => console.log(err));
+}
+
   componentDidMount(){
       axios
           .get('http://localhost:4000/api/users')
@@ -57,7 +75,7 @@ class App extends Component {
     return (
       <div className="App">
         <UserForm name={this.state.name} bio={this.state.bio} addUser={this.addUser} handleInput={this.handleInput}/>
-        <UserList users={this.state.users} deleteUser={this.deleteUser}/>
+        <UserList users={this.state.users} deleteUser={this.deleteUser} isUpdating={this.state.isUpdating} populateForm={this.populateForm} handleInput={this.handleInput} userId={this.state.userId} updateUser={this.updateUser}/>
       </div>
     );
   }
